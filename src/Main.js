@@ -39,19 +39,23 @@ class Main {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
+    // Attendre la réponse de l'utilisateur si le client Riot est en cours d'exécution
     if (utils.isRiotClientRunning()) {
-      const result = dialog.showMessageBoxSync({
-        type: 'question',
-        buttons: ['Oui', 'Non'],
-        title: 'Spectral',
-        message: "Il semble que le client Riot soit déjà en cours d'exécution. Spectral doit redémarrer le client pour fonctionner correctement. Voulez-vous continuer ?",
-        defaultId: 0
+      const result = await new Promise((resolve) => {
+        dialog.showMessageBox({
+          type: 'question',
+          buttons: ['Oui', 'Non'],
+          title: 'Spectral',
+          message: "Il semble que le client Riot soit déjà en cours d'exécution. Spectral doit redémarrer le client pour fonctionner correctement. Voulez-vous continuer ?",
+          defaultId: 0
+        }).then(response => resolve(response.response));
       });
 
       if (result === 1) {
         app.quit();
       } else {
-        utils.killRiotClient();
+        this.showNotification('Spectral', 'Redémarrage du client Riot en cours...');
+        utils.closeRiotClient();
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
@@ -77,6 +81,9 @@ class Main {
 
     // Create a connection
     this.createConnection();
+
+    //Notification
+    this.showNotification('Spectral', 'Spectral gère maintenant votre statut de chat. Cliquez sur l\'icône de la barre d\'état pour afficher les options.');
   }
 
   async runProxy() {
@@ -207,7 +214,7 @@ class Main {
       title: title,
       body: body,
     })
-  
+
     notification.show()
   }
 }

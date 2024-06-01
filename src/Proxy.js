@@ -1,6 +1,5 @@
 const { EventEmitter } = require('events');
 const http = require('http');
-const fetch = require('node-fetch');
 const { dialog } = require('electron');
 
 class Proxy extends EventEmitter {
@@ -26,6 +25,7 @@ class Proxy extends EventEmitter {
   }
 
   async modifyClientConfig(req, res) {
+    const fetch = (await import('node-fetch')).default;
     const requestUrl = new URL(this.clientConfigUrl + req.url);
     const options = this.buildRequestOptions(req);
 
@@ -107,6 +107,7 @@ class Proxy extends EventEmitter {
   }
 
   async getAffinityHost(req) {
+    const fetch = (await import('node-fetch')).default;
     const option = {
       method: 'GET',
       headers: {
