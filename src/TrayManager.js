@@ -3,10 +3,13 @@ const path = require('path');
 
 class TrayManager {
   constructor(main) {
-      this.tray = null;
-      this.main = main;
+    this.tray = null;
+    this.main = main;
   }
 
+  /**
+   * Crée l'icône de la barre d'état et initialise le menu contextuel
+   */
   createTray() {
     const iconPath = path.join(__dirname, '..', 'resources', 'icon.png');
     const icon = nativeImage.createFromPath(iconPath);
@@ -15,6 +18,9 @@ class TrayManager {
     this.updateTray();
   }
 
+  /**
+   * Met à jour le menu contextuel de la barre d'état
+   */
   updateTray() {
     const contextMenu = Menu.buildFromTemplate([
       {
@@ -23,12 +29,12 @@ class TrayManager {
         checked: this.main.enabled,
         click: async () => {
           this.main.enabled = !this.main.enabled;
-          await this.main.updateStatus(this.main.enabled ? this.main.status : 'chat');
+          await this.main.updateStatus(this.main.enabled ? this.main.status : 'offline');
           this.updateTray();
         }
       },
       {
-        label: 'Status Type',
+        label: 'Type de statut',
         submenu: [
           {
             label: 'En ligne',
@@ -67,7 +73,7 @@ class TrayManager {
         click: () => {
           const result = dialog.showMessageBoxSync({
             type: 'question',
-            buttons: ['Yes', 'No'],
+            buttons: ['Oui', 'Non'],
             title: 'Spectral',
             message: 'Êtes-vous sûr de vouloir quitter Spectral ?',
           });

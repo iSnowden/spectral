@@ -4,7 +4,12 @@ const { DOMParser, XMLSerializer } = require('xmldom');
 const crypto = require('crypto');
 
 class ChatConnection extends EventEmitter {
-
+  /**
+   * Constructeur de la classe ChatConnection
+   * @param {Object} main - Configuration principale
+   * @param {Stream} incoming - Flux de données entrant
+   * @param {Stream} outgoing - Flux de données sortant
+   */
   constructor(main, incoming, outgoing) {
     super();
     this.main = main;
@@ -14,24 +19,28 @@ class ChatConnection extends EventEmitter {
     this.connected = true;
   }
 
+  /**
+   * Démarre la connexion de chat en écoutant les messages entrants et sortants
+   */
   start() {
     this.incomingMessage();
     this.outgoingMessage();
   }
 
+  /**
+   * Gère les messages entrants
+   */
   incomingMessage() {
-    console.log('Incoming message');
     try {
-
       this.incoming.on('data', async (chunk) => {
         const data = new TextDecoder().decode(chunk);
 
+        // Vérifie si le message contient une présence et si la fonction est activée
         if (data.includes("<presence") && this.main.enabled) {
           await this.rewriteAndResend(data, this.main.status);
         } else {
           await this.outgoing.write(chunk);
         }
-
       });
 
       this.incoming.on('end', () => {
@@ -49,14 +58,14 @@ class ChatConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Gère les messages sortants
+   */
   outgoingMessage() {
-    console.log('Outgoing message');
     try {
-
       this.outgoing.on('data', async (chunk) => {
         const data = new TextDecoder().decode(chunk);
         await this.incoming.write(chunk);
-
       });
 
       this.outgoing.on('end', () => {
@@ -74,10 +83,13 @@ class ChatConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Réécrit et renvoie les données de présence
+   * @param {string} data - Les données XML de présence
+   * @param {string} status - Le nouveau statut de présence
+   */
   async rewriteAndResend(data, status) {
-    console.log('Rewriting and resending:', data);
     try {
-
       this.lastPresence = data;
       const wrappedContent = `<xml>${data}</xml>`;
       const parser = new DOMParser();
@@ -86,7 +98,6 @@ class ChatConnection extends EventEmitter {
       const presences = Array.from(xml.getElementsByTagName("presence"));
 
       for (let presence of presences) {
-
         if (status !== "chat" || this.getTextContent(presence, "games > league_of_legends > st") !== "dnd") {
           this.setTextContent(presence, "show", status);
           this.setTextContent(presence, "games > league_of_legends > st", status);
@@ -104,7 +115,6 @@ class ChatConnection extends EventEmitter {
         } else {
           this.removeElement(presence, "games > league_of_legends");
         }
-
       }
 
       const serializer = new XMLSerializer();
@@ -117,11 +127,23 @@ class ChatConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Obtient le contenu textuel d'un nœud XML en utilisant un sélecteur
+   * @param {Node} node - Le nœud XML de base
+   * @param {string} selector - Le sélecteur pour trouver l'élément
+   * @returns {string|null} - Le contenu textuel de l'élément sélectionné ou null s'il n'existe pas
+   */
   getTextContent(node, selector) {
     const elements = this.selectElements(node, selector);
     return elements.length > 0 ? elements[0].textContent : null;
   }
 
+  /**
+   * Définit le contenu textuel d'un nœud XML en utilisant un sélecteur
+   * @param {Node} node - Le nœud XML de base
+   * @param {string} selector - Le sélecteur pour trouver l'élément
+   * @param {string} text - Le texte à définir
+   */
   setTextContent(node, selector, text) {
     const elements = this.selectElements(node, selector);
     if (elements.length > 0) {
@@ -129,6 +151,11 @@ class ChatConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Supprime un élément XML en utilisant un sélecteur
+   * @param {Node} node - Le nœud XML de base
+   * @param {string} selector - Le sélecteur pour trouver l'élément
+   */
   removeElement(node, selector) {
     const elements = this.selectElements(node, selector);
     elements.forEach(element => {
@@ -136,6 +163,12 @@ class ChatConnection extends EventEmitter {
     });
   }
 
+  /**
+   * Sélectionne des éléments XML en utilisant un sélecteur complexe
+   * @param {Node} node - Le nœud XML de base
+   * @param {string} selector - Le sélecteur pour trouver les éléments
+   * @returns {Array} - Les éléments sélectionnés
+   */
   selectElements(node, selector) {
     const paths = selector.split(' > ');
     let currentNodes = [node];
@@ -150,11 +183,14 @@ class ChatConnection extends EventEmitter {
     return currentNodes;
   }
 
+  /**
+   * Met à jour le statut de présence
+   * @param {string} status - Le nouveau statut de présence
+   */
   async updateStatus(status) {
     if (!this.lastPresence || !this.connected) return;
     await this.rewriteAndResend(this.lastPresence, status);
   }
-
 }
 
 module.exports = ChatConnection;

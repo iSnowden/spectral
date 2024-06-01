@@ -11,6 +11,7 @@ const ChatConnection = require('./ChatConnection');
 
 class Main {
   constructor() {
+    // Initialisation des propriétés de l'application
     this.store = null;
     this.trayManager = null;
     this.proxy = null;
@@ -27,19 +28,25 @@ class Main {
     this.initStore();
   }
 
+  /**
+   * Initialise le stockage en chargeant le module electron-store dynamiquement
+   */
   async initStore() {
     const Store = (await import('electron-store')).default;
     this.store = new Store();
     this.status = this.store.get('userPreferences.status') ?? 'offline';
   }
 
+  /**
+   * Initialise l'application principale
+   */
   async init() {
     // Attendre que le store soit initialisé
     while (!this.store) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Attendre la réponse de l'utilisateur si le client Riot est en cours d'exécution
+    // Vérifie si le client Riot est en cours d'exécution et demande à l'utilisateur s'il souhaite continuer
     if (utils.isRiotClientRunning()) {
       const result = await new Promise((resolve) => {
         dialog.showMessageBox({
@@ -60,32 +67,35 @@ class Main {
       }
     }
 
-    // Create the tray
+    // Crée l'icône de la barre d'état
     this.trayManager = new TrayManager(this);
     this.trayManager.createTray();
 
-    // Check if the RiotClientServices path is valid
+    // Vérifie si le chemin du client Riot est valide
     await this.checkRiotClientPath();
 
-    // Start the proxy
+    // Démarre le proxy
     await this.runProxy();
 
-    // Wait for the proxy to initialize
+    // Attendre l'initialisation du proxy
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Start League of Legends
+    // Démarre League of Legends
     await this.startLeagueOfLegends();
 
-    // Wait for the chat host and port to be updated
+    // Attendre la mise à jour des configurations de chat
     await this.waitForChatConfig();
 
-    // Create a connection
+    // Crée une connexion de chat
     this.createConnection();
 
-    //Notification
+    // Affiche une notification
     this.showNotification('Spectral', 'Spectral gère maintenant votre statut de chat. Cliquez sur l\'icône de la barre d\'état pour afficher les options.');
   }
 
+  /**
+   * Démarre le proxy pour intercepter les communications
+   */
   async runProxy() {
     this.server = net.createServer();
     this.server.listen(0, '127.0.0.1', async () => {
@@ -97,11 +107,13 @@ class Main {
         this.configUpdated = true;
         this.chatHost = args.riotChatHost;
         this.chatPort = args.riotChatPort;
-        console.log(`The original chat server details were ${args.riotChatHost}:${args.riotChatPort}`);
       });
     });
   }
 
+  /**
+   * Attendre que la configuration de chat soit mise à jour
+   */
   waitForChatConfig() {
     return new Promise((resolve) => {
       const checkConfig = () => {
@@ -115,6 +127,9 @@ class Main {
     });
   }
 
+  /**
+   * Vérifie si le chemin vers RiotClientServices est valide
+   */
   async checkRiotClientPath() {
     if (!this.riotClientPath) {
       dialog.showMessageBoxSync({
@@ -127,6 +142,9 @@ class Main {
     }
   }
 
+  /**
+   * Démarre League of Legends avec le proxy configuré
+   */
   async startLeagueOfLegends() {
     if (!this.proxy) {
       console.error('Proxy not initialized. Cannot start League of Legends.');
@@ -138,13 +156,11 @@ class Main {
       `--launch-patchline=live`,
       `--client-config-url=http://127.0.0.1:${this.proxy.proxyPort}`
     ];
-    console.log('Starting League of Legends with args:', startArgs);
 
     const lolClient = spawn(this.riotClientPath, startArgs, { stdio: 'inherit' });
 
     if (lolClient) {
       lolClient.on('exit', (code) => {
-        console.log(`League of Legends exited with code ${code}`);
         dialog.showMessageBoxSync({
           type: 'error',
           buttons: ['OK'],
@@ -167,6 +183,9 @@ class Main {
     }
   }
 
+  /**
+   * Crée une connexion de chat sécurisée
+   */
   async createConnection() {
     const options = {
       pfx: fs.readFileSync(path.join(__dirname, '..', 'resources', 'certificate.pfx')),
@@ -174,23 +193,18 @@ class Main {
       rejectUnauthorized: false
     };
 
-    console.log('Starting server...', this.chatHost, this.chatPort);
-    console.log(this.server.address());
-
     this.server.on('connection', (socket) => {
-      console.log('Incoming connection');
       const incoming = new tls.TLSSocket(socket, { isServer: true, ...options });
       incoming.once('secure', () => {
         const outgoing = tls.connect(this.chatPort, this.chatHost, { rejectUnauthorized: false }, () => {
-          console.log(`Connected to ${this.chatHost}:${this.chatPort}`);
 
-          let chatConnexion = new ChatConnection(this, incoming, outgoing);
-          chatConnexion.start();
-          chatConnexion.on('connectionErrored', () => {
-            this.connections.splice(this.connections.indexOf(chatConnexion), 1);
+          let chatConnection = new ChatConnection(this, incoming, outgoing);
+          chatConnection.start();
+          chatConnection.on('connectionErrored', () => {
+            this.connections.splice(this.connections.indexOf(chatConnection), 1);
           });
-          this.connections.push(chatConnexion);
-
+          this.connections.push(chatConnection);
+          
         });
       });
     });
@@ -200,6 +214,10 @@ class Main {
     });
   }
 
+  /**
+   * Met à jour le statut de l'utilisateur
+   * @param {string} status - Le nouveau statut à définir
+   */
   updateStatus(status) {
     for (const connection of this.connections) {
       connection.updateStatus(status);
@@ -209,13 +227,18 @@ class Main {
     }
   }
 
+  /**
+   * Affiche une notification système
+   * @param {string} title - Le titre de la notification
+   * @param {string} body - Le corps de la notification
+   */
   showNotification(title, body) {
     const notification = new Notification({
       title: title,
       body: body,
-    })
+    });
 
-    notification.show()
+    notification.show();
   }
 }
 

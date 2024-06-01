@@ -1,3 +1,4 @@
+// Importation des modules nécessaires
 const { EventEmitter } = require('events');
 const http = require('http');
 const { dialog } = require('electron');
@@ -10,20 +11,27 @@ class Proxy extends EventEmitter {
     this.riotGeo = 'https://riot-geo.pas.si.riotgames.com/pas/v1/service/chat';
     this.proxyPort = 0;
     this.server = null;
-    this.chatPort = 0; // Assuming this is set somewhere else or needs to be passed
+    this.chatPort = 0;
     this.riotChatHost = null;
     this.riotChatPort = 0;
   }
 
+  /**
+   * Initialise le proxy HTTP
+   */
   async initialize() {
     this.server = http.createServer(async (req, res) => {
       await this.modifyClientConfig(req, res);
     }).listen(0);
 
     this.proxyPort = this.server.address().port;
-    console.log(`Proxy listening on port ${this.proxyPort}`);
   }
 
+  /**
+   * Modifie la configuration du client Riot
+   * @param {http.IncomingMessage} req - La requête HTTP entrante
+   * @param {http.ServerResponse} res - La réponse HTTP sortante
+   */
   async modifyClientConfig(req, res) {
     const fetch = (await import('node-fetch')).default;
     const requestUrl = new URL(this.clientConfigUrl + req.url);
@@ -48,6 +56,11 @@ class Proxy extends EventEmitter {
     }
   }
 
+  /**
+   * Construit les options de la requête HTTP pour le proxy
+   * @param {http.IncomingMessage} req - La requête HTTP entrante
+   * @returns {Object} - Les options de la requête
+   */
   buildRequestOptions(req) {
     return {
       method: 'GET',
@@ -59,9 +72,16 @@ class Proxy extends EventEmitter {
     };
   }
 
+  /**
+   * Met à jour le contenu de la configuration du client
+   * @param {string} content - Le contenu JSON de la configuration
+   * @param {http.IncomingMessage} req - La requête HTTP entrante
+   * @returns {string} - Le contenu JSON mis à jour
+   */
   async updateConfigContent(content, req) {
     let config = JSON.parse(content);
 
+    // Mise à jour de l'hôte et du port de chat
     if (config['chat.host']) {
       this.riotChatHost = config['chat.host'];
       config['chat.host'] = '127.0.0.1';
@@ -72,16 +92,19 @@ class Proxy extends EventEmitter {
       config['chat.port'] = this.lolChat;
     }
 
+    // Mise à jour des affinités de chat
     if (config['chat.affinities']) {
       await this.updateChatAffinities(config, req);
     }
 
+    // Permettre les mauvais certificats
     if (config['chat.allow_bad_cert.enabled'] === false) {
       config['chat.allow_bad_cert.enabled'] = true;
     }
 
     const updatedContent = JSON.stringify(config);
 
+    // Émission de l'événement de mise à jour de la configuration
     if (this.riotChatHost && this.riotChatPort !== 0) {
       this.emit('updatedConfig', { riotChatHost: this.riotChatHost, riotChatPort: this.riotChatPort });
     }
@@ -89,6 +112,11 @@ class Proxy extends EventEmitter {
     return updatedContent;
   }
 
+  /**
+   * Met à jour les affinités de chat
+   * @param {Object} config - La configuration JSON du client
+   * @param {http.IncomingMessage} req - La requête HTTP entrante
+   */
   async updateChatAffinities(config, req) {
     const affinities = config['chat.affinities'];
 
@@ -106,6 +134,11 @@ class Proxy extends EventEmitter {
     }
   }
 
+  /**
+   * Obtient l'hôte d'affinité de chat
+   * @param {http.IncomingMessage} req - La requête HTTP entrante
+   * @returns {string|null} - L'hôte d'affinité ou null
+   */
   async getAffinityHost(req) {
     const fetch = (await import('node-fetch')).default;
     const option = {
@@ -124,6 +157,12 @@ class Proxy extends EventEmitter {
     return json.affinity ? json.affinity : null;
   }
 
+  /**
+   * Envoie la réponse HTTP au client
+   * @param {http.ServerResponse} res - La réponse HTTP sortante
+   * @param {http.IncomingMessage} clientResponse - La réponse du client
+   * @param {string} updatedContent - Le contenu mis à jour
+   */
   sendResponse(res, clientResponse, updatedContent) {
     res.statusCode = clientResponse.status;
     res.setHeader('Content-Type', 'application/json');
@@ -131,11 +170,18 @@ class Proxy extends EventEmitter {
     res.end(updatedContent);
   }
 
+  /**
+   * Gère les requêtes HTTP non trouvées
+   * @param {http.ServerResponse} res - La réponse HTTP sortante
+   */
   handleNotFound(res) {
     res.writeHead(404);
     res.end();
   }
 
+  /**
+   * Affiche un message d'erreur
+   */
   errorMessage() {
     dialog.showMessageBoxSync({
       type: 'error',
