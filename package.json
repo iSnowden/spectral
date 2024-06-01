@@ -48,8 +48,10 @@
     "electron-builder": "^24.13.3"
   },
   "dependencies": {
+    "electron-log": "^5.1.5",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^9.0.0",
+    "electron-updater": "^6.1.8",
     "node-fetch": "^3.3.2",
     "xmldom": "^0.6.0"
   }
