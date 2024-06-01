@@ -27,7 +27,7 @@ If you prefer to build the application from source, follow these steps:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/your-username/spectral.git
+    git clone https://github.com/iSnowden/spectral.git
     cd spectral
     ```
 
