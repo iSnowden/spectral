@@ -1,6 +1,6 @@
 # Spectral
 
-<img src="https://raw.githubusercontent.com/iSnowden/spectral/main/resources/icon.png" alt="Spectral Application" width="200">
+<img src="https://raw.githubusercontent.com/iSnowden/spectral/main/resources/icon.png" alt="Spectral Application" width="100">
 
 Spectral is a JavaScript and Electron-based transcription of the project [Deceive](https://github.com/molenzwiebel/Deceive). This project aims to replicate the main functionalities of Deceive, an application that allows users to appear offline on the League of Legends client. Please note that not all features from the original project are included in this version. For the complete version, please download the original [Deceive](https://github.com/molenzwiebel/Deceive).
 
@@ -66,4 +66,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-<img src="https://raw.githubusercontent.com/iSnowden/spectral/main/resources/icon.png" alt="Spectral Application" width="200">
+<img src="https://raw.githubusercontent.com/iSnowden/spectral/main/resources/icon.png" alt="Spectral Application" width="100">
