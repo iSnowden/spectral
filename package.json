@@ -1,7 +1,7 @@
 {
   "name": "spectral",
   "productName": "Spectral",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "spectral",
   "main": "src/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "build": "electron-builder"
   },
   "build": {
-    "appId": "com.spectral.id",
+    "appId": "com.isnowden.spectral",
     "productName": "Spectral",
     "files": [
       "src/**/*",

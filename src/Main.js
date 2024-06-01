@@ -204,7 +204,7 @@ class Main {
             this.connections.splice(this.connections.indexOf(chatConnection), 1);
           });
           this.connections.push(chatConnection);
-          
+
         });
       });
     });
@@ -236,6 +236,7 @@ class Main {
     const notification = new Notification({
       title: title,
       body: body,
+      icon:path.join(__dirname, '..', 'resources', 'icon.ico'),
     });
 
     notification.show();

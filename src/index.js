@@ -76,6 +76,11 @@ let main = null;
 
 // Événement déclenché lorsque l'application est prête
 app.on('ready', async () => {
+  // Définir l'identifiant du modèle utilisateur de l'application sous Windows
+  if (process.platform === 'win32') {
+    app.setAppUserModelId(app.name);
+  }
+
   // Initialisation du système de mise à jour automatique
   initAutoUpdate();
   
