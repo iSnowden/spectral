@@ -15,7 +15,7 @@ Spectral is a JavaScript and Electron-based transcription of the project [Deceiv
 To use Spectral, follow these steps:
 
 1. **Download the Application**:
-   - Go to the [Releases](https://github.com/your-username/spectral/releases) section of this repository.
+   - Go to the [Releases](https://github.com/iSnowden/spectral/releases) section of this repository.
    - Download the latest release for your operating system.
 
 2. **Run the Application**:
