@@ -13,12 +13,6 @@ function sendStatusToWindow(text) {
 
 // Configurer le point d'entrée pour la mise à jour automatique
 function initAutoUpdate() {
-  // URL de mise à jour
-  autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'iSnowden',
-    repo: 'spectral'
-  });
 
   autoUpdater.on('checking-for-update', () => {
     sendStatusToWindow('Checking for update...');

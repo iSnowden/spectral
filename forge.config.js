@@ -8,31 +8,16 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        name: "spectral",
+        authors: "iSnowden",
+        description: "Change your status to appear offline to your friends in the League of Legends client."
+      },
+    },
+    {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
-      config: {
-        name: "spectral-portable",
-        authors: "iSnowden",
-        description: "Portable version of Spectral for macOS."
-      },
-    },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['win32'],
-      config: {
-        name: "spectral-portable",
-        authors: "iSnowden",
-        description: "Portable version of Spectral for Windows."
-      },
-    },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['linux'],
-      config: {
-        name: "spectral-portable",
-        authors: "iSnowden",
-        description: "Portable version of Spectral for Linux."
-      },
     },
     {
       name: '@electron-forge/maker-deb',
@@ -68,24 +53,6 @@ module.exports = {
         },
         prerelease: false,
         draft: true,
-        releaseNotes: "First portable version release.",
-        assets: [
-          {
-            path: "./out/spectral-portable-win32.zip",
-            name: "spectral-portable-win32.zip",
-            label: "Spectral Portable for Windows"
-          },
-          {
-            path: "./out/spectral-portable-darwin.zip",
-            name: "spectral-portable-darwin.zip",
-            label: "Spectral Portable for macOS"
-          },
-          {
-            path: "./out/spectral-portable-linux.zip",
-            name: "spectral-portable-linux.zip",
-            label: "Spectral Portable for Linux"
-          }
-        ]
       },
     },
   ],

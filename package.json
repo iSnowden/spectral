@@ -1,7 +1,7 @@
 {
   "name": "spectral",
   "productName": "Spectral",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Change your status to appear offline to your friends in the League of Legends client.",
   "main": "src/index.js",
   "scripts": {
@@ -10,8 +10,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "build": "electron-builder",
-    "release": "node release.js"
+    "build": "electron-builder -p always"
   },
   "build": {
     "appId": "com.isnowden.spectral",
@@ -62,6 +61,7 @@
     "electron-store": "^9.0.0",
     "electron-updater": "^6.1.8",
     "node-fetch": "^3.3.2",
+    "update-electron-app": "^3.0.0",
     "xmldom": "^0.6.0"
   }
 }
