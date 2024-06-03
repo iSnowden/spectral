@@ -22,7 +22,12 @@ class TrayManager {
    * Met à jour le menu contextuel de la barre d'état
    */
   updateTray() {
+    const versionLabel = `Version: ${app.getVersion()}`;
     const contextMenu = Menu.buildFromTemplate([
+      {
+        label: versionLabel,
+        enabled: false
+      },
       {
         label: 'Activé',
         type: 'checkbox',
