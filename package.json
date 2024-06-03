@@ -1,10 +1,10 @@
 {
+  "version": "1.0.3",
   "name": "spectral",
   "productName": "Spectral",
   "author": {
     "name": "iSnowden"
   },
-  "version": "1.0.",
   "description": "Change your status to appear offline to your friends in the League of Legends client.",
   "main": "src/index.js",
   "scripts": {
