@@ -1,7 +1,7 @@
 {
   "name": "spectral",
   "productName": "Spectral",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "spectral",
   "main": "src/index.js",
   "scripts": {
