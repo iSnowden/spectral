@@ -9,7 +9,11 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: "spectral",
+        authors: "iSnowden",
+        description: "Change your status to appear offline to your friends in the League of Legends client."
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -29,8 +33,6 @@ module.exports = {
       name: '@electron-forge/plugin-auto-unpack-natives',
       config: {},
     },
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
@@ -40,5 +42,18 @@ module.exports = {
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'iSnowden',
+          name: 'spectral',
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
   ],
 };
