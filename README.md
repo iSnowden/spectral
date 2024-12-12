@@ -71,4 +71,4 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ---
 
-<img src="https://ressources.isnowden.com/spectral/icon.png" alt="Spectral Application" width="100">
+<img src="https://raw.githubusercontent.com/iSnowden/spectral/refs/heads/main/resources/icon.png" alt="Spectral Application" width="100">
