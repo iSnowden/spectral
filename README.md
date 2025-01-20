@@ -2,10 +2,6 @@
 
 <img src="https://raw.githubusercontent.com/iSnowden/spectral/refs/heads/main/resources/icon.png" alt="Spectral Application" width="100">
 
-Spectral is a JavaScript and Electron-based transcription of the project [Deceive](https://github.com/molenzwiebel/Deceive). This project aims to replicate the main functionalities of Deceive, an application that allows users to appear offline on the League of Legends client. Please note that not all features from the original project are included in this version. For the complete version, please download the original [Deceive](https://github.com/molenzwiebel/Deceive).
-
-This project has been created for educational purposes to help me learn and practice development skills.
-
 ## Features
 
 - **Appear Offline**: Change your status to appear offline to your friends in the League of Legends client.
@@ -64,10 +60,6 @@ This project is a simplified version of [Deceive](https://github.com/molenzwiebe
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- [Deceive](https://github.com/molenzwiebel/Deceive) by molenzwiebel
 
 ---
 
